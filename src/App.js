@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import axios from 'axios';
 
 class App extends Component {
   styles = {
@@ -34,11 +35,11 @@ class App extends Component {
 
     let row_limit = this.board.length;
     let column_limit = this.board.length;
-    
+
     //Check Existance
-    if(this.finalIndex.length!==0){
-      for(let index=0;index<this.finalIndex.length;index++){
-        if(this.finalIndex[index][0]===selectedIndex[0]&&this.finalIndex[index][1]===selectedIndex[1]){
+    if (this.finalIndex.length !== 0) {
+      for (let index = 0; index < this.finalIndex.length; index++) {
+        if (this.finalIndex[index][0] === selectedIndex[0] && this.finalIndex[index][1] === selectedIndex[1]) {
           alert("You can't select same character again");
           return;
         }
@@ -62,7 +63,7 @@ class App extends Component {
       }
       else {
         this.finalWord.push(params);
-        this.finalIndex.push([selectedIndex[0],selectedIndex[1]]);
+        this.finalIndex.push([selectedIndex[0], selectedIndex[1]]);
         document.getElementById(e.target.id).style.background = '#345678';
 
         this.neigbour_arr = [];
@@ -81,7 +82,7 @@ class App extends Component {
     }
     else {
       this.finalWord.push(params);
-      this.finalIndex.push([selectedIndex[0],selectedIndex[1]]);
+      this.finalIndex.push([selectedIndex[0], selectedIndex[1]]);
 
       document.getElementById(e.target.id).style.background = '#345678';
 
@@ -101,10 +102,22 @@ class App extends Component {
     }
 
     console.log("this.finalWord", this.finalWord);
-    
+
     console.log("this.finalIndex", this.finalIndex);
 
 
+  }
+
+  submitToCheck() {
+    axios.post('/api/v1/boggle/word', {
+      word: this.finalWord
+    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
   render() {
 
@@ -136,6 +149,7 @@ class App extends Component {
             <div id="32" onClick={(e) => this.selectChar(e, this.board[3][2])} style={this.styles.colstyle}>{this.board[3][2]}</div>
             <div id="33" onClick={(e) => this.selectChar(e, this.board[3][3])} style={this.styles.colstyle}>{this.board[3][3]}</div>
           </div>
+          <div onClick={() => this.submitToCheck()}>Submit</div>
 
         </header>
       </div>
