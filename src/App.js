@@ -3,6 +3,13 @@ import './App.css';
 import axios from 'axios';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      board: []
+    };
+
+  }
   styles = {
     rowstyle: {
       display: 'flex',
@@ -14,12 +21,15 @@ class App extends Component {
       background: '#67DAF9'
     }
   };
-  board = [
-    ['T', 'A', 'P', '*'],
-    ['E', 'A', 'K', 'S'],
-    ['O', 'B', 'R', 'S'],
-    ['S', '*', 'X', 'D']
-  ];
+
+
+  getBoard = () => {
+
+    axios.get('/api/v1/boggle/board').then(response => {
+      const chars = response.data.data;
+      this.setState({ board: chars })
+    });
+  }
 
   finalWord = [];
   finalIndex = [];
@@ -33,8 +43,8 @@ class App extends Component {
       selectedIndex[i] = parseInt(selectedIndex[i], 10);
     }
 
-    let row_limit = this.board.length;
-    let column_limit = this.board.length;
+    let row_limit = 4;
+    let column_limit = 4;
 
     //Check Existance
     if (this.finalIndex.length !== 0) {
@@ -109,6 +119,7 @@ class App extends Component {
   }
 
   submitToCheck() {
+
     axios.post('/api/v1/boggle/word', {
       word: this.finalWord
     })
@@ -119,35 +130,38 @@ class App extends Component {
         console.log(error);
       });
   }
+  componentDidMount() {
+    this.getBoard();
+  }
   render() {
-
+    console.log("this.state.board", this.state.board);
     return (
       <div className="App">
         <header className="App-header">
 
           <div id="row01" style={this.styles.rowstyle} >
-            <div id="00" onClick={(e) => this.selectChar(e, this.board[0][0])} style={this.styles.colstyle}>{this.board[0][0]}</div>
-            <div id="01" onClick={(e) => this.selectChar(e, this.board[0][1])} style={this.styles.colstyle}>{this.board[0][1]}</div>
-            <div id="02" onClick={(e) => this.selectChar(e, this.board[0][2])} style={this.styles.colstyle}>{this.board[0][2]}</div>
-            <div id="03" onClick={(e) => this.selectChar(e, this.board[0][3])} style={this.styles.colstyle}>{this.board[0][3]}</div>
+            <div id="00" onClick={(e) => this.selectChar(e, this.state.board[0])} style={this.styles.colstyle}>{this.state.board[0]}</div>
+            <div id="01" onClick={(e) => this.selectChar(e, this.state.board[1])} style={this.styles.colstyle}>{this.state.board[1]}</div>
+            <div id="02" onClick={(e) => this.selectChar(e, this.state.board[2])} style={this.styles.colstyle}>{this.state.board[2]}</div>
+            <div id="03" onClick={(e) => this.selectChar(e, this.state.board[3])} style={this.styles.colstyle}>{this.state.board[3]}</div>
           </div>
           <div id="row02" style={this.styles.rowstyle}>
-            <div id="10" onClick={(e) => this.selectChar(e, this.board[1][0])} style={this.styles.colstyle}>{this.board[1][0]}</div>
-            <div id="11" onClick={(e) => this.selectChar(e, this.board[1][1])} style={this.styles.colstyle}>{this.board[1][1]}</div>
-            <div id="12" onClick={(e) => this.selectChar(e, this.board[1][2])} style={this.styles.colstyle}>{this.board[1][2]}</div>
-            <div id="13" onClick={(e) => this.selectChar(e, this.board[1][3])} style={this.styles.colstyle}>{this.board[1][3]}</div>
+            <div id="10" onClick={(e) => this.selectChar(e, this.state.board[4])} style={this.styles.colstyle}>{this.state.board[4]}</div>
+            <div id="11" onClick={(e) => this.selectChar(e, this.state.board[5])} style={this.styles.colstyle}>{this.state.board[5]}</div>
+            <div id="12" onClick={(e) => this.selectChar(e, this.state.board[6])} style={this.styles.colstyle}>{this.state.board[6]}</div>
+            <div id="13" onClick={(e) => this.selectChar(e, this.state.board[7])} style={this.styles.colstyle}>{this.state.board[7]}</div>
           </div>
           <div id="row03" style={this.styles.rowstyle}>
-            <div id="20" onClick={(e) => this.selectChar(e, this.board[2][0])} style={this.styles.colstyle}>{this.board[2][0]}</div>
-            <div id="21" onClick={(e) => this.selectChar(e, this.board[2][1])} style={this.styles.colstyle}>{this.board[2][1]}</div>
-            <div id="22" onClick={(e) => this.selectChar(e, this.board[2][2])} style={this.styles.colstyle}>{this.board[2][2]}</div>
-            <div id="23" onClick={(e) => this.selectChar(e, this.board[2][3])} style={this.styles.colstyle}>{this.board[2][3]}</div>
+            <div id="20" onClick={(e) => this.selectChar(e, this.state.board[8])} style={this.styles.colstyle}>{this.state.board[8]}</div>
+            <div id="21" onClick={(e) => this.selectChar(e, this.state.board[9])} style={this.styles.colstyle}>{this.state.board[9]}</div>
+            <div id="22" onClick={(e) => this.selectChar(e, this.state.board[10])} style={this.styles.colstyle}>{this.state.board[10]}</div>
+            <div id="23" onClick={(e) => this.selectChar(e, this.state.board[11])} style={this.styles.colstyle}>{this.state.board[11]}</div>
           </div>
           <div id="row04" style={this.styles.rowstyle}>
-            <div id="30" onClick={(e) => this.selectChar(e, this.board[3][0])} style={this.styles.colstyle}>{this.board[3][0]}</div>
-            <div id="31" onClick={(e) => this.selectChar(e, this.board[3][1])} style={this.styles.colstyle}>{this.board[3][1]}</div>
-            <div id="32" onClick={(e) => this.selectChar(e, this.board[3][2])} style={this.styles.colstyle}>{this.board[3][2]}</div>
-            <div id="33" onClick={(e) => this.selectChar(e, this.board[3][3])} style={this.styles.colstyle}>{this.board[3][3]}</div>
+            <div id="30" onClick={(e) => this.selectChar(e, this.state.board[12])} style={this.styles.colstyle}>{this.state.board[12]}</div>
+            <div id="31" onClick={(e) => this.selectChar(e, this.state.board[13])} style={this.styles.colstyle}>{this.state.board[13]}</div>
+            <div id="32" onClick={(e) => this.selectChar(e, this.state.board[14])} style={this.styles.colstyle}>{this.state.board[14]}</div>
+            <div id="33" onClick={(e) => this.selectChar(e, this.state.board[15])} style={this.styles.colstyle}>{this.state.board[15]}</div>
           </div>
           <div onClick={() => this.submitToCheck()}>Submit</div>
 
