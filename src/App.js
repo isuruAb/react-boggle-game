@@ -150,15 +150,15 @@ class App extends Component {
         .catch(function (error) {
           console.log(error);
         });
-      this.finalWord = [];
-      this.finalIndex = [];
-      this.neigbourArr = [];
+
 
     }
     else{
       alert("this word is already selected");
     }
-
+    this.finalWord = [];
+    this.finalIndex = [];
+    this.neigbourArr = [];
   }
 
   componentDidMount() {
