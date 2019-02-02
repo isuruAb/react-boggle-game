@@ -3,23 +3,30 @@ import './App.css';
 import axios from 'axios';
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      board: []
+      board: [],
+      points: 0
     };
 
   }
   styles = {
     rowstyle: {
       display: 'flex',
-      width: '300px',
-      height: '50px'
+      minWidth: '150px',
+      minHeight: '10px',
+      cursor: 'pointer'
     },
     colstyle: {
       flex: 1,
-      background: '#67DAF9'
-    }
+      padding: '30px',
+      width: '60px',
+      height: '35px',
+      border: '0.5px solid #fff',
+      background: '#4885ed'
+    },
+
   };
 
 
@@ -33,7 +40,8 @@ class App extends Component {
 
   finalWord = [];
   finalIndex = [];
-  neigbour_arr = [];
+  neigbourArr = [];
+  submittedWords = [];
   selectChar(e, params) {
     console.log(e.target.id);
     console.log(params);
@@ -56,13 +64,13 @@ class App extends Component {
       }
     }
 
-    if (this.neigbour_arr.length !== 0) {
+    if (this.neigbourArr.length !== 0) {
       let isNeigbour = false;
 
 
-      for (let neigbour = 0; neigbour < this.neigbour_arr.length; neigbour++) {
-        if (selectedIndex[0] === this.neigbour_arr[neigbour][0] && selectedIndex[1] === this.neigbour_arr[neigbour][1]) {
-          console.log('They are equal!', JSON.stringify(this.neigbour_arr[neigbour]));
+      for (let neigbour = 0; neigbour < this.neigbourArr.length; neigbour++) {
+        if (selectedIndex[0] === this.neigbourArr[neigbour][0] && selectedIndex[1] === this.neigbourArr[neigbour][1]) {
+          console.log('They are equal!', JSON.stringify(this.neigbourArr[neigbour]));
           isNeigbour = true;
 
         }
@@ -76,17 +84,17 @@ class App extends Component {
         this.finalIndex.push([selectedIndex[0], selectedIndex[1]]);
         document.getElementById(e.target.id).style.background = '#345678';
 
-        this.neigbour_arr = [];
+        this.neigbourArr = [];
 
         if (row_limit > 0) {
           for (var x = Math.max(0, selectedIndex[1] - 1); x <= Math.min(selectedIndex[1] + 1, row_limit - 1); x++) {
             for (var y = Math.max(0, selectedIndex[0] - 1); y <= Math.min(selectedIndex[0] + 1, column_limit - 1); y++) {
               if (x !== selectedIndex[1] || y !== selectedIndex[0]) {
-                this.neigbour_arr.push([y, x]);
+                this.neigbourArr.push([y, x]);
               }
             }
           }
-          console.log("neigbour_arr", this.neigbour_arr);
+          console.log("neigbourArr", this.neigbourArr);
         }
       }
     }
@@ -97,39 +105,62 @@ class App extends Component {
       document.getElementById(e.target.id).style.background = '#345678';
 
       console.log('no length else');
-      this.neigbour_arr = [];
+      this.neigbourArr = [];
 
       if (row_limit > 0) {
         for (let x = Math.max(0, selectedIndex[1] - 1); x <= Math.min(selectedIndex[1] + 1, row_limit - 1); x++) {
           for (let y = Math.max(0, selectedIndex[0] - 1); y <= Math.min(selectedIndex[0] + 1, column_limit - 1); y++) {
             if (x !== selectedIndex[1] || y !== selectedIndex[0]) {
-              this.neigbour_arr.push([y, x]);
+              this.neigbourArr.push([y, x]);
             }
           }
         }
-        console.log("neigbour_arr", this.neigbour_arr);
+        console.log("neigbourArr", this.neigbourArr);
       }
     }
-
     console.log("this.finalWord", this.finalWord);
-
     console.log("this.finalIndex", this.finalIndex);
 
-
   }
-
+  // Submit selected word to the back end
+  // Store selected words in an array
+  // Check whether word is already selected
   submitToCheck() {
-
-    axios.post('/api/v1/boggle/word', {
-      word: this.finalWord
-    })
-      .then(function (response) {
-        console.log(response);
+    for (let cell = 0; cell < this.finalIndex.length; cell++) {
+      document.getElementById(String(this.finalIndex[cell].join(''))).style.background = '#4885ed';
+    }
+    let wordToBeSubmitted = this.finalWord.join('');
+    var found = this.submittedWords.find(function (element) {
+      return element === wordToBeSubmitted;
+    });
+    if (found !== wordToBeSubmitted) {
+      console.log("found", found);
+      var self = this;
+      axios.post('/api/v1/boggle/word', {
+        word: this.finalWord
       })
-      .catch(function (error) {
-        console.log(error);
-      });
+        .then(function (response) {
+
+          if (response.data.check === true) {
+            self.submittedWords.push(wordToBeSubmitted)
+            self.setState({ points: self.state.points + 1 });
+            console.log("this.state.points", self.state.points);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.finalWord = [];
+      this.finalIndex = [];
+      this.neigbourArr = [];
+
+    }
+    else{
+      alert("this word is already selected");
+    }
+
   }
+
   componentDidMount() {
     this.getBoard();
   }
@@ -137,7 +168,7 @@ class App extends Component {
     console.log("this.state.board", this.state.board);
     return (
       <div className="App">
-        <header className="App-header">
+        <div className="App-header">
 
           <div id="row01" style={this.styles.rowstyle} >
             <div id="00" onClick={(e) => this.selectChar(e, this.state.board[0])} style={this.styles.colstyle}>{this.state.board[0]}</div>
@@ -163,9 +194,11 @@ class App extends Component {
             <div id="32" onClick={(e) => this.selectChar(e, this.state.board[14])} style={this.styles.colstyle}>{this.state.board[14]}</div>
             <div id="33" onClick={(e) => this.selectChar(e, this.state.board[15])} style={this.styles.colstyle}>{this.state.board[15]}</div>
           </div>
-          <div onClick={() => this.submitToCheck()}>Submit</div>
+          <div className="submitbtn" onClick={() => this.submitToCheck()}>
+            <p>Submit</p>
+          </div>
 
-        </header>
+        </div>
       </div>
     );
   }
