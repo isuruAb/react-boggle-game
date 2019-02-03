@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-
+import Clock from './components/clock';
 class App extends Component {
   constructor(props) {
     super(props);
@@ -55,7 +55,7 @@ class App extends Component {
           isNeigbour = true;
         }
       }
-      
+
       if (!isNeigbour) {
         alert("you need to select a neigbour");
         return;
@@ -118,14 +118,14 @@ class App extends Component {
       console.log("found", found);
       var self = this;
       self.submittedWords.push(wordToBeSubmitted);
-      console.log('submittedWords',self.submittedWords);
+      console.log('submittedWords', self.submittedWords);
 
       axios.post('/api/v1/boggle/word', {
         word: this.finalWord
       })
         .then(function (response) {
           if (response.data.check === true) {
-            self.setState({ points: self.state.points + response.data.points});
+            self.setState({ points: self.state.points + response.data.points });
             console.log("this.state.points", self.state.points);
           }
         })
@@ -133,7 +133,7 @@ class App extends Component {
           console.log(error);
         });
     }
-    else{
+    else {
       alert("this word is already selected");
     }
     this.finalWord = [];
@@ -149,9 +149,13 @@ class App extends Component {
     console.log("this.state.board", this.state.board);
     return (
       <div className="App">
+      
         <div className="App-header">
           <div>
-            <h1>Points: {this.state.points}</h1> 
+            <h1>Points: {this.state.points}</h1>
+          </div>
+          <div>
+            <h3><Clock /></h3>
           </div>
           <div id="row01" className="rowstyle">
             <div id="00" onClick={(e) => this.selectChar(e, this.state.board[0])} className="colstyle">{this.state.board[0]}</div>
