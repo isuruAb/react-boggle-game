@@ -14,7 +14,7 @@ class App extends Component {
       points: 0,
       dialogOpen: false,
       complete: false,
-      timeInSec: 40,
+      timeInSec: 120,
       correctWords:[]
     };
     this.wrongSound = new Audio(WrongSoundFile);
