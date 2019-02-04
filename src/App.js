@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import Clock from './components/clock';
+import ResultsDialog from './components/results';
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       board: [],
-      points: 0
+      points: 0,
+      dialogOpen: false,
+      complete: false,
+      timeInSec: 40,
+      correctWords:[]
     };
-
   }
 
   //Get the board from backend for the first time
@@ -23,10 +27,9 @@ class App extends Component {
   finalWord = [];
   finalIndex = [];
   neigbourArr = [];
-  submittedWords = [];
+  submittedwords = [];
   selectChar(e, params) {
-    console.log(e.target.id);
-    console.log(params);
+
     let selectedIndex = e.target.id.split("");
 
     for (var i = 0; i < selectedIndex.length; i++) {
@@ -51,7 +54,6 @@ class App extends Component {
 
       for (let neigbour = 0; neigbour < this.neigbourArr.length; neigbour++) {
         if (selectedIndex[0] === this.neigbourArr[neigbour][0] && selectedIndex[1] === this.neigbourArr[neigbour][1]) {
-          console.log('They are equal!', JSON.stringify(this.neigbourArr[neigbour]));
           isNeigbour = true;
         }
       }
@@ -75,7 +77,6 @@ class App extends Component {
               }
             }
           }
-          console.log("neigbourArr", this.neigbourArr);
         }
       }
     }
@@ -85,7 +86,6 @@ class App extends Component {
 
       document.getElementById(e.target.id).style.background = '#345678';
 
-      console.log('no length else');
       this.neigbourArr = [];
 
       if (row_limit > 0) {
@@ -96,11 +96,9 @@ class App extends Component {
             }
           }
         }
-        console.log("neigbourArr", this.neigbourArr);
       }
     }
-    console.log("this.finalWord", this.finalWord);
-    console.log("this.finalIndex", this.finalIndex);
+
 
   }
   // Submit selected word to the back end
@@ -111,22 +109,20 @@ class App extends Component {
       document.getElementById(String(this.finalIndex[cell].join(''))).style.background = '#4885ed';
     }
     let wordToBeSubmitted = this.finalWord.join('');
-    var found = this.submittedWords.find(function (element) {
+    var found = this.submittedwords.find(function (element) {
       return element === wordToBeSubmitted;
     });
     if (found !== wordToBeSubmitted) {
-      console.log("found", found);
       var self = this;
-      self.submittedWords.push(wordToBeSubmitted);
-      console.log('submittedWords', self.submittedWords);
+      self.submittedwords.push(wordToBeSubmitted);
 
       axios.post('/api/v1/boggle/word', {
         word: this.finalWord
       })
         .then(function (response) {
           if (response.data.check === true) {
-            self.setState({ points: self.state.points + response.data.points });
-            console.log("this.state.points", self.state.points);
+            self.setState({ points: self.state.points + response.data.points,correctWords:response.data.results });
+
           }
         })
         .catch(function (error) {
@@ -140,22 +136,48 @@ class App extends Component {
     this.finalIndex = [];
     this.neigbourArr = [];
   }
+  handleClose = value => {
+    this.setState({ dialogOpen: false });
+    window.location.reload();
 
+  };
+  onTimesUp = () => {
+    this.setState({ dialogOpen: true, complete: true });
+  }
   componentDidMount() {
     this.getBoard();
+    var intervalId = setInterval(this.timer, 1000);
+    this.setState({ intervalId: intervalId });
+  }
+  // time out when timeInSec value exceeds
+  timer = () => {
+    this.setState({ timeInSec: this.state.timeInSec - 1 });
+    if (this.state.timeInSec === 0) {
+
+      clearInterval(this.state.intervalId)
+      this.onTimesUp()
+    }
   }
 
   render() {
-    console.log("this.state.board", this.state.board);
+
     return (
       <div className="App">
-      
+        <ResultsDialog
+          open={this.state.dialogOpen}
+          onClose={this.handleClose}
+          submittedwords={this.submittedwords}
+          finalresult={this.state.points}
+          result={this.state.correctWords}
+        />
         <div className="App-header">
           <div>
             <h1>Points: {this.state.points}</h1>
           </div>
           <div>
-            <h3><Clock /></h3>
+            <h3>
+              <span>Countdown(sec): {this.state.timeInSec}</span>
+            </h3>
           </div>
           <div id="row01" className="rowstyle">
             <div id="00" onClick={(e) => this.selectChar(e, this.state.board[0])} className="colstyle">{this.state.board[0]}</div>
