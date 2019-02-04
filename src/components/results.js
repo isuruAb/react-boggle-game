@@ -72,8 +72,6 @@ class ResultsDialog extends Component {
                             ))}
                         </TableBody>
                     </Table>
-
-
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose} color="primary">

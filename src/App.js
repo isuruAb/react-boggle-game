@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 import ResultsDialog from './components/results';
+import CorrectSoundFile from './assets/correct-sound.mp3';
+import WrongSoundFile from './assets/wrong-sound.mp3';
+import NotNeigbourFile from './assets/beep.mp3';
 
 class App extends Component {
   constructor(props) {
@@ -14,6 +17,9 @@ class App extends Component {
       timeInSec: 40,
       correctWords:[]
     };
+    this.wrongSound = new Audio(WrongSoundFile);
+    this.correctSound = new Audio(CorrectSoundFile);
+    this.notNeighbour = new Audio(NotNeigbourFile);
   }
 
   //Get the board from backend for the first time
@@ -31,7 +37,6 @@ class App extends Component {
   selectChar(e, params) {
 
     let selectedIndex = e.target.id.split("");
-
     for (var i = 0; i < selectedIndex.length; i++) {
       selectedIndex[i] = parseInt(selectedIndex[i], 10);
     }
@@ -43,7 +48,7 @@ class App extends Component {
     if (this.finalIndex.length !== 0) {
       for (let index = 0; index < this.finalIndex.length; index++) {
         if (this.finalIndex[index][0] === selectedIndex[0] && this.finalIndex[index][1] === selectedIndex[1]) {
-          alert("You can't select same character again");
+          this.notNeighbour.play();
           return;
         }
       }
@@ -59,7 +64,7 @@ class App extends Component {
       }
 
       if (!isNeigbour) {
-        alert("you need to select a neigbour");
+        this.notNeighbour.play();
         return;
       }
       else {
@@ -99,7 +104,6 @@ class App extends Component {
       }
     }
 
-
   }
   // Submit selected word to the back end
   // Store selected words in an array
@@ -121,7 +125,11 @@ class App extends Component {
       })
         .then(function (response) {
           if (response.data.check === true) {
+            self.correctSound.play()
             self.setState({ points: self.state.points + response.data.points,correctWords:response.data.results });
+          }
+          else{
+            self.wrongSound.play()
 
           }
         })
@@ -130,7 +138,8 @@ class App extends Component {
         });
     }
     else {
-      alert("this word is already selected");
+      let self = this;
+      self.wrongSound.play()
     }
     this.finalWord = [];
     this.finalIndex = [];
@@ -160,7 +169,6 @@ class App extends Component {
   }
 
   render() {
-
     return (
       <div className="App">
         <ResultsDialog
