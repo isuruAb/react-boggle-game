@@ -11,3 +11,6 @@ When a tile is blank, it can be treated as any other letter.  Note that in one g
 - Install Dependencies `npm install`
 - Run Application `npm start` this will run the application on port 3000 (Make sure your Backend application is up and running)
 - Setup Backend application [https://github.com/isuruAb/boggle-back](https://github.com/isuruAb/boggle-back)
+
+
+## Game Play Demo

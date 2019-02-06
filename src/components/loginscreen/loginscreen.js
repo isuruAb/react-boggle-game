@@ -29,14 +29,13 @@ class LoginScreen extends Component {
     };
     handleChange(e) {
         this.setState({ name: e.target.value })
-        console.log("this.state.name" + this.state.name)
     }
     playGame(history) {
-        if(this.state.name.length!==0){
-            history.push('/game/'+this.state.name);
+        if (this.state.name.length !== 0) {
+            history.push('/game/' + this.state.name);
 
         }
-        else{
+        else {
             alert("Please Enter Your Name");
         }
     }
@@ -57,11 +56,12 @@ class LoginScreen extends Component {
                                 margin="normal"
                                 variant="outlined"
                             />
-                
+
                             <Route render={({ history }) => (
                                 <Button
                                     variant="contained"
                                     color="primary"
+                                    type="submit"
                                     style={this.styles.formEle}
                                     onClick={() => this.playGame(history)}
                                 >

@@ -14,7 +14,7 @@ class GameScreen extends Component {
       points: 0,
       dialogOpen: false,
       complete: false,
-      timeInSec: 10,
+      timeInSec: 120,
       correctWords: [],
       users: []
     };
@@ -158,7 +158,6 @@ class GameScreen extends Component {
       datetime: Date().toLocaleString()
     })
       .then(function (response) {
-        console.log(response.data)
         axios.get('/api/v1/boggle/users').then(response => {
           const users = response.data.users;
           self.setState({ users: users })
@@ -173,7 +172,7 @@ class GameScreen extends Component {
     this.getLeaderboard();
     this.setState({ dialogOpen: true, complete: true });
   }
-  componentDidMount() {
+  componentWillMount() {
     this.getBoard();
     var intervalId = setInterval(this.timer, 1000);
     this.setState({ intervalId: intervalId });
