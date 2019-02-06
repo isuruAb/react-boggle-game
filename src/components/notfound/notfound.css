@@ -1,0 +1,39 @@
+.App {
+    text-align: center;
+  }
+  
+.NotFound {
+background-color: #282c34;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+font-size: calc(2px + 2vmin);
+color: #000;
+}
+.banner{
+    background-image: url('not-found-bg.jpg');
+    background-size: cover;
+    text-align: center;
+    margin: 0 auto;
+    height: 400px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.banner h1{
+    position: relative;
+    left: 200px;
+    font-size: 52px;
+    color: #000
+
+}
+.container{
+    display: 'flex';
+    flex-wrap: 'wrap';
+    width: 700px;
+
+  }
