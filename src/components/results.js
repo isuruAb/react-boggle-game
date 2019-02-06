@@ -8,32 +8,29 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import DoneIcon from '@material-ui/icons/Done';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 
+import Demo from './leaderboard';
 class ResultsDialog extends Component {
     handleClose = () => {
         this.props.onClose();
     };
 
-    wrondWords=()=>{
-        let wrongwords=0;
-        for(let i=0;i<this.props.result.length;i++){
-            if(this.props.result[i][1]===0){
-                wrongwords=wrongwords+1;
+    wrondWords = () => {
+        let wrongwords = 0;
+        for (let i = 0; i < this.props.result.length; i++) {
+            if (this.props.result[i][1] === 0) {
+                wrongwords = wrongwords + 1;
             }
         }
         return wrongwords;
     }
+
     render() {
         const { classes, onClose, selectedValue, ...other } = this.props;
-        
+
         return (
             <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
-                <DialogTitle id="simple-dialog-title">Selected Words</DialogTitle>
+                <DialogTitle id="simple-dialog-title">Score Card</DialogTitle>
                 <DialogContent>
 
                     <Chip
@@ -47,31 +44,16 @@ class ResultsDialog extends Component {
                     />
                     <Chip
                         icon={<FaceIcon />}
-                        label={"Wrong Words: "+this.wrondWords()}
+                        label={"Wrong Words: " + this.wrondWords()}
                         color="secondary"
                         variant="outlined"
                     />
                     <h2>Overall Score: {this.props.finalresult}</h2>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Word</TableCell>
-                                <TableCell align="right">Points</TableCell>
+                    <Demo
+                        result={this.props.result}
+                        users={this.props.users}
+                    />
 
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {this.props.result.map(row => (
-                                <TableRow key={row[0]}>
-                                    <TableCell component="th" scope="row">
-                                        {row[0]}
-                                    </TableCell>
-                                    <TableCell align="right">{row[1]}</TableCell>
-
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose} color="primary">
