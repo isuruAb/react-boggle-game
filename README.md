@@ -14,3 +14,7 @@ When a tile is blank, it can be treated as any other letter.  Note that in one g
 
 
 ## Game Play Demo
+
+Please refer below link to watch game play demo video
+[https://youtu.be/clhoTFMFqYg](https://youtu.be/clhoTFMFqYg) 
+
