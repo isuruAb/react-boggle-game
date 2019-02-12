@@ -19,7 +19,7 @@ class LoginScreen extends Component {
             display: 'flex',
             flexWrap: 'wrap',
             flex: 1,
-            width: '400px',
+            //maxWidth: '700px',
             flexDirection: 'column',
         },
         formEle: {
@@ -43,7 +43,7 @@ class LoginScreen extends Component {
         return (
             <div className="App">
                 <div className="App-header">
-                    <Paper elevation={1} >
+                    <Paper elevation={1} className="loginPaper">
                         <h1>Boggle Challenge</h1>
 
                         <form noValidate autoComplete="off" style={this.styles.container}>

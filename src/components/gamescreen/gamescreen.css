@@ -26,19 +26,19 @@
   
   }
   .submitbtn p{
-    padding:0 15px;
+    padding:20px 15px;
   }
   .colstyle{
     flex: 1;
-    padding: 30px;
-    width: 60px;
-    height: 35px;
+    padding: 10% 0;
+    /* height: 35px; */
     border: 0.5px solid #fff;
     background: #4885ed;
   }
   .rowstyle{
+    flex: 1;
+    flex-direction: row;
     display: flex;
-    min-width: 150px;
     min-height: 10px;
     cursor: pointer;
   }
@@ -51,3 +51,16 @@
     }
   }
   
+  @media (min-width:480px) {
+    .board-grid {
+      width: 400px;
+  
+    }
+  }
+
+  @media (max-width:480px) {
+    .board-grid {
+      width: 100%;
+  
+    }
+  }
