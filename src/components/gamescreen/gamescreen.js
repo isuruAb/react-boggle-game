@@ -25,7 +25,8 @@ class GameScreen extends Component {
 
   //Get the board from backend for the first time
   getBoard = () => {
-    axios.get('/api/v1/boggle/board').then(response => {
+
+    axios.get(process.env.REACT_APP_BACKEND_URL+'/api/v1/boggle/board').then(response => {
       const chars = response.data.data;
       this.setState({ board: chars })
     });
@@ -121,7 +122,7 @@ class GameScreen extends Component {
       var self = this;
       self.submittedwords.push(wordToBeSubmitted);
 
-      axios.post('/api/v1/boggle/word', {
+      axios.post(process.env.REACT_APP_BACKEND_URL+'/api/v1/boggle/word', {
         word: this.finalWord
       })
         .then(function (response) {
@@ -152,13 +153,13 @@ class GameScreen extends Component {
   }
   getLeaderboard = () => {
     const self = this
-    axios.post('/api/v1/boggle/user', {
+    axios.post(process.env.REACT_APP_BACKEND_URL+'/api/v1/boggle/user', {
       username: this.props.location.pathname.replace("/game/", ""),
       points: this.state.points,
       datetime: Date().toLocaleString()
     })
       .then(function (response) {
-        axios.get('/api/v1/boggle/users').then(response => {
+        axios.get(process.env.REACT_APP_BACKEND_URL+'/api/v1/boggle/users').then(response => {
           const users = response.data.users;
           self.setState({ users: users })
         });
