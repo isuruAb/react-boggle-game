@@ -13,7 +13,19 @@ workbox.routing.registerNavigationRoute('/index.html', {
         new RegExp('/game/')
     ]
 });
+workbox.routing.registerRoute(
+    'http://localhost:3001/api/v1/boggle/board',
+    workbox.strategies.networkFirst({
+        cacheName: 'json-data'
 
+    })
+)
+// workbox.routing.registerRoute(
+//     new RegExp('http://localhost:3001/api/v1/boggle/board\.json'),
+//     workbox.strategies.networkFirst({
+//         cacheName: 'json-data'
+//     })
+//   )
 self.addEventListener('install', event => {
 
     console.log("install.");
