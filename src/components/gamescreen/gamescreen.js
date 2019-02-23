@@ -16,13 +16,16 @@ class GameScreen extends Component {
       complete: false,
       timeInSec: 120,
       correctWords: [],
-      users: []
+      users: [],
+      offline: !navigator.onLine
     };
     this.wrongSound = new Audio(WrongSoundFile);
     this.correctSound = new Audio(CorrectSoundFile);
     this.notNeighbour = new Audio(NotNeigbourFile);
   }
-
+  setOfflineState = () => {
+    this.setState({ offline: !this.state.offline })
+  }
   //Get the board from backend for the first time
   getBoard = () => {
 
@@ -128,13 +131,18 @@ class GameScreen extends Component {
         word: this.finalWord
       })
         .then(function (response) {
-          if (response.data.check === true) {
-            self.correctSound.play()
-            self.setState({ points: self.state.points + response.data.points, correctWords: response.data.results });
-          }
-          else {
-            self.wrongSound.play()
+          console.log('resp', response.data)
+          if (response.data.error) {
+            alert(response.data.error);
+          } else {
+            if (response.data.check === true) {
+              self.correctSound.play()
+              self.setState({ points: self.state.points + response.data.points, correctWords: response.data.results });
+            }
+            else {
+              self.wrongSound.play()
 
+            }
           }
         })
         .catch(function (error) {
@@ -179,7 +187,12 @@ class GameScreen extends Component {
     this.getBoard();
     var intervalId = setInterval(this.timer, 1000);
     this.setState({ intervalId: intervalId });
+
+    window.addEventListener('online', this.setOfflineState);
+    window.addEventListener('offline', this.setOfflineState)
+
   }
+
   // time out when timeInSec value exceeds
   timer = () => {
     this.setState({ timeInSec: this.state.timeInSec - 1 });
@@ -207,8 +220,12 @@ class GameScreen extends Component {
           </div>
           <div>
             <h3>
-              <span>Countdown(sec): {this.state.timeInSec}</span>
+              <span>Countdown(sec): {this.state.timeInSec}{this.state.offline && <span> | Offline</span>}
+              </span>
             </h3>
+            {/* <h3>
+
+            </h3> */}
           </div>
           <div className="board-grid">
             <div id="row01" className="rowstyle">

@@ -20,12 +20,19 @@ workbox.routing.registerRoute(
 
     })
 )
-// workbox.routing.registerRoute(
-//     new RegExp('http://localhost:3001/api/v1/boggle/board\.json'),
-//     workbox.strategies.networkFirst({
-//         cacheName: 'json-data'
-//     })
-//   )
+self.addEventListener('fetch',event=>{
+    if(event.request.method==='POST'){
+        event.respondWith(
+            fetch(event.request).catch(err=>{
+                return new Response(
+                    JSON.stringify({error: "Your application runs on offline mode", status: 402}),{
+                        headers:{'Content-type':'application/json'}
+                    }
+                )
+            })
+        )
+    }
+})
 self.addEventListener('install', event => {
 
     console.log("install.");
