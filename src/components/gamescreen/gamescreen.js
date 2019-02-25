@@ -116,14 +116,16 @@ class GameScreen extends Component {
   // Store selected words in an array
   // Check whether word is already selected
   submitToCheck() {
+    
     for (let cell = 0; cell < this.finalIndex.length; cell++) {
       document.getElementById(String(this.finalIndex[cell].join(''))).style.background = '#4885ed';
     }
     let wordToBeSubmitted = this.finalWord.join('');
+
     var found = this.submittedwords.find(function (element) {
       return element === wordToBeSubmitted;
     });
-    if (found !== wordToBeSubmitted) {
+    if (found !== wordToBeSubmitted && wordToBeSubmitted!=='') {
       var self = this;
       self.submittedwords.push(wordToBeSubmitted);
 
