@@ -56,11 +56,17 @@
       width: 400px;
   
     }
+    .modalwrap{
+      margin: 0;
+    }
   }
 
   @media (max-width:480px) {
     .board-grid {
       width: 100%;
   
+    }
+    .modalwrap{
+      margin: 0;
     }
   }

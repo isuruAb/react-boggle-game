@@ -24,9 +24,7 @@ class App extends Component {
 
       <Switch>
         <Route exact path='/' component={LoginScreen} />
-        {/* <Route exact path="/game" component={GameScreen} /> */}
         <PrivateRoute exact path='/game'  component={GameScreen} />
-
         <Route exact path="*" component={NotFound} />
       </Switch>
       </BrowserRouter>

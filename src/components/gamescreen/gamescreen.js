@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './gamescreen.css';
-import axios from 'axios';
 import ResultsDialog from '../results';
 import CorrectSoundFile from '../../assets/correct-sound.mp3';
 import WrongSoundFile from '../../assets/wrong-sound.mp3';
 import NotNeigbourFile from '../../assets/beep.mp3';
+import { database, auth } from '../../firebase.js'
 const file = require("../../dictionary.txt");
 
 class GameScreen extends Component {
@@ -18,7 +18,8 @@ class GameScreen extends Component {
       timeInSec: 120,
       correctWords: [],
       users: [],
-      offline: !navigator.onLine
+      offline: !navigator.onLine,
+      selectedCorrectWords: []
     };
     this.wrongSound = new Audio(WrongSoundFile);
     this.correctSound = new Audio(CorrectSoundFile);
@@ -36,6 +37,8 @@ class GameScreen extends Component {
   finalIndex = [];
   neigbourArr = [];
   submittedwords = [];
+  correctWords = [];
+
   selectChar(e, params) {
 
     let selectedIndex = e.target.id.split("");
@@ -110,25 +113,8 @@ class GameScreen extends Component {
   // Submit selected word to the back end
   // Store selected words in an array
   // Check whether word is already selected
-  // readTextFile = file => {
-  //   var rawFile = new XMLHttpRequest();
-  //   rawFile.open("GET", file, false);
-  //   rawFile.onreadystatechange = () => {
-  //     if (rawFile.readyState === 4) {
-  //       if (rawFile.status === 200 || rawFile.status === 0) {
-  //         var allText = rawFile.responseText;
-  //         console.log("allText: ", allText);
-  //         this.setState({
-  //           fundData: allText
-  //         });
-  //       }
-  //     }
-  //   };
-  //   rawFile.send(null);
-  // };
-  submitToCheck() {
-    // this.readTextFile(file);
 
+  submitToCheck() {
 
     for (let cell = 0; cell < this.finalIndex.length; cell++) {
       document.getElementById(String(this.finalIndex[cell].join(''))).style.background = '#4885ed';
@@ -157,36 +143,35 @@ class GameScreen extends Component {
               }
             }
             console.log("count", count);
-            this.setState({
-              points: this.state.points + count
-            });
+            if (count > 0) {
+              this.setState({
+                points: this.state.points + count
+              });
+              this.correctSound.play();
+
+              this.correctWords.push([
+                this.finalWord.join('').toLowerCase(),
+                count
+              ]);
+
+              this.setState({ correctWords: this.correctWords });
+              console.log("this.tempArray.tempArray", this.correctWords);
+
+            }
+            else {
+              this.wrongSound.play()
+              this.correctWords.push([
+                this.finalWord.join('').toLowerCase(),
+                0
+              ]);
+              this.setState({ correctWords: this.correctWords });
+
+            }
+
           }
         }
       };
       rawFile.send(null);
-
-      // axios.post(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/word', {
-      //   word: this.finalWord
-      // })
-      //   .then(function (response) {
-      //     console.log('resp', response.data)
-      //     if (response.data.error) {
-      //       alert(response.data.error);
-      //     } else {
-      //       if (response.data.check === true) {
-      //         self.correctSound.play()
-      //         self.setState({ points: self.state.points + response.data.points, correctWords: response.data.results });
-      //         console.log("this.state.correctWords",self.state.correctWords);
-      //       }
-      //       else {
-      //         self.wrongSound.play()
-
-      //       }
-      //     }
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   });
     }
     else {
       let self = this;
@@ -201,26 +186,51 @@ class GameScreen extends Component {
     window.location.reload();
   }
   getLeaderboard = () => {
-    const self = this
-    axios.post(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/user', {
-      username: this.props.location.pathname.replace("/game/", ""),
-      points: this.state.points,
-      datetime: Date().toLocaleString()
-    })
-      .then(function (response) {
-        axios.get(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/users').then(response => {
-          const users = response.data.users;
-          self.setState({ users: users })
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
+
+    //var data = this.state.vouchers[this.state.shownVoucher];
+    console.log("auth.currentUser.uid", auth.currentUser.uid);
+    database.ref('marks/' + auth.currentUser.uid).on('value', data => {
+      if(data.val().points<this.state.points){
+        database.ref('marks/' + auth.currentUser.uid).set(
+          {
+            uid: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            points: this.state.points,
+            datetime: Date().toLocaleString()
+          }
+        );
+      }
+    });
+
+
+    database.ref('marks').on('value', data => {
+      var tempUsers = [];
+      Object.values(data.val()).forEach(function (item) {
+        tempUsers.push(item)
       });
+
+      function compare(a,b) {
+        if (a.points < b.points)
+          return 1;
+        if (a.points > b.points)
+          return -1;
+        return 0;
+      }
+      
+      tempUsers.sort(compare);
+
+      this.setState({
+        users: tempUsers
+      })
+      console.log("users", this.state.users);
+    });
 
   }
   onTimesUp = () => {
     this.getLeaderboard();
     this.setState({ dialogOpen: true, complete: true });
+    this.submittedwords = [];
+    this.correctWords = [];
   }
   componentWillMount() {
     this.getBoard();

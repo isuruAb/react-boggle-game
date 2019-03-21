@@ -50,8 +50,8 @@ class LeaderBoard extends Component {
         const DATE_OPTIONS = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
 
         return (
-            <div className={classes.root}>
-                <AppBar position="static" color="default">
+            <div >
+                <AppBar position="static" color="default" >
                     <Tabs
                         value={this.state.value}
                         onChange={this.handleChange}
@@ -102,7 +102,7 @@ class LeaderBoard extends Component {
                             </TableHead>
                             <TableBody>
                                 {this.props.users.map(row => (
-                                    <TableRow key={row.id}>
+                                    <TableRow key={row.uid}>
                                         <TableCell component="th" scope="row">
                                             {row.username}
                                         </TableCell>
