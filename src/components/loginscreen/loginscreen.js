@@ -1,17 +1,19 @@
 
 import React, { Component } from 'react';
-import TextField from '@material-ui/core/TextField';
 import './loginscreen.css';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import { Route } from 'react-router-dom'
-
+import firebase from 'firebase';
+import { auth } from '../../firebase'
+import GameScreen from '../gamescreen/gamescreen';
+import { Redirect } from 'react-router-dom'
 
 class LoginScreen extends Component {
     constructor(props) {
-        super();
+        super(props);
         this.state = {
-            name: ''
+            name: '',
+            authenticated: false
         }
     }
     styles = {
@@ -19,7 +21,6 @@ class LoginScreen extends Component {
             display: 'flex',
             flexWrap: 'wrap',
             flex: 1,
-            //maxWidth: '700px',
             flexDirection: 'column',
         },
         formEle: {
@@ -27,53 +28,74 @@ class LoginScreen extends Component {
             margin: '0px 20px 20px 20px'
         }
     };
-    handleChange(e) {
-        this.setState({ name: e.target.value })
-    }
-    playGame(history) {
-        if (this.state.name.length !== 0) {
-            history.push('/game/' + this.state.name);
 
-        }
-        else {
-            alert("Please Enter Your Name");
-        }
+    playGame = (e) => {
+        e.preventDefault();
+        var provider = new firebase.auth.GoogleAuthProvider();
+        // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+        auth.signInWithPopup(provider).then(function (result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            console.log("token", token);
+            localStorage.setItem("token", token);
+            // The signed-in user info.
+            var user = result.user;
+            console.log("user", user);
+            // this.props.dispatch(push('/game/path'));
+
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log({
+                "error": errorMessage,
+                errorCode: errorCode
+            });
+        });
+
+
+
     }
+    componentDidMount() {
+        auth.onAuthStateChanged(function (user) {
+            if (user) {
+                this.setState({ authenticated: true });
+            } else {
+                this.setState({ authenticated: false });
+            }
+        }.bind(this));
+    }
+
     render() {
         return (
-            <div className="App">
-                <div className="App-header">
-                    <Paper elevation={1} className="loginPaper">
-                        <h1>Boggle Challenge</h1>
+            <div>
+                {!this.state.authenticated && <div className="App">
+                    <div className="App-header">
+                        <Paper elevation={1} className="loginPaper">
+                            <h1>Boggle Challenge</h1>
 
-                        <form noValidate autoComplete="off" style={this.styles.container}>
-                            <TextField
-                                id="outlined-name"
-                                label="Your Name"
-                                style={this.styles.formEle}
-                                value={this.state.name}
-                                onChange={(e) => this.handleChange(e)}
-                                margin="normal"
-                                variant="outlined"
-                            />
+                            <form noValidate autoComplete="off" style={this.styles.container}>
 
-                            <Route render={({ history }) => (
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     type="submit"
                                     style={this.styles.formEle}
-                                    onClick={() => this.playGame(history)}
+                                    onClick={(e) => this.playGame(e)}
                                 >
-                                    Play
+                                    Login with Gmail
                                 </Button>
-                            )} />
-                        </form>
+                            </form>
 
-                    </Paper>
+                        </Paper>
 
-                </div>
+                    </div>
+                </div>}
+                {this.state.authenticated &&
+                    <Redirect to='/game' />
+                }
             </div>
+
         );
     }
 }
