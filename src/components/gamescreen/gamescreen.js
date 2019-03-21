@@ -5,6 +5,7 @@ import ResultsDialog from '../results';
 import CorrectSoundFile from '../../assets/correct-sound.mp3';
 import WrongSoundFile from '../../assets/wrong-sound.mp3';
 import NotNeigbourFile from '../../assets/beep.mp3';
+const file = require("../../dictionary.txt");
 
 class GameScreen extends Component {
   constructor(props) {
@@ -28,13 +29,7 @@ class GameScreen extends Component {
   }
   //Get the board from backend for the first time
   getBoard = () => {
-
-    axios.get(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/board').then(response => {
-      const chars = response.data.data;
-      this.setState({ board: chars })
-    }).catch(function (error) {
-      console.log(error);
-    });
+    this.setState({ board: ["T", "A", "P", "*", "E", "A", "K", "S", "O", "B", "R", "S", "S", "*", "X", "D"] });
   }
 
   finalWord = [];
@@ -115,8 +110,26 @@ class GameScreen extends Component {
   // Submit selected word to the back end
   // Store selected words in an array
   // Check whether word is already selected
+  // readTextFile = file => {
+  //   var rawFile = new XMLHttpRequest();
+  //   rawFile.open("GET", file, false);
+  //   rawFile.onreadystatechange = () => {
+  //     if (rawFile.readyState === 4) {
+  //       if (rawFile.status === 200 || rawFile.status === 0) {
+  //         var allText = rawFile.responseText;
+  //         console.log("allText: ", allText);
+  //         this.setState({
+  //           fundData: allText
+  //         });
+  //       }
+  //     }
+  //   };
+  //   rawFile.send(null);
+  // };
   submitToCheck() {
-    
+    // this.readTextFile(file);
+
+
     for (let cell = 0; cell < this.finalIndex.length; cell++) {
       document.getElementById(String(this.finalIndex[cell].join(''))).style.background = '#4885ed';
     }
@@ -125,31 +138,55 @@ class GameScreen extends Component {
     var found = this.submittedwords.find(function (element) {
       return element === wordToBeSubmitted;
     });
-    if (found !== wordToBeSubmitted && wordToBeSubmitted!=='') {
+    if (found !== wordToBeSubmitted && wordToBeSubmitted !== '') {
       var self = this;
       self.submittedwords.push(wordToBeSubmitted);
 
-      axios.post(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/word', {
-        word: this.finalWord
-      })
-        .then(function (response) {
-          console.log('resp', response.data)
-          if (response.data.error) {
-            alert(response.data.error);
-          } else {
-            if (response.data.check === true) {
-              self.correctSound.play()
-              self.setState({ points: self.state.points + response.data.points, correctWords: response.data.results });
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.onreadystatechange = () => {
+        if (rawFile.readyState === 4) {
+          if (rawFile.status === 200 || rawFile.status === 0) {
+            var allText = rawFile.responseText.split("\n");
+            var regexObj = this.finalWord.join('').toLowerCase().replace(/[*]/, "[a-z]");
+            var finalRegx = new RegExp('\\b' + regexObj + '\\b');
+            var count = 0;
+            for (let i = 0; i < allText.length; i++) {
+              if (allText[i].match(finalRegx)) {
+                count = count + 1;
+              }
             }
-            else {
-              self.wrongSound.play()
-
-            }
+            console.log("count", count);
+            this.setState({
+              points: this.state.points + count
+            });
           }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+        }
+      };
+      rawFile.send(null);
+
+      // axios.post(process.env.REACT_APP_BACKEND_URL + '/api/v1/boggle/word', {
+      //   word: this.finalWord
+      // })
+      //   .then(function (response) {
+      //     console.log('resp', response.data)
+      //     if (response.data.error) {
+      //       alert(response.data.error);
+      //     } else {
+      //       if (response.data.check === true) {
+      //         self.correctSound.play()
+      //         self.setState({ points: self.state.points + response.data.points, correctWords: response.data.results });
+      //         console.log("this.state.correctWords",self.state.correctWords);
+      //       }
+      //       else {
+      //         self.wrongSound.play()
+
+      //       }
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
     }
     else {
       let self = this;
