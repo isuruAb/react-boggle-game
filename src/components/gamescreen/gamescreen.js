@@ -4,7 +4,9 @@ import ResultsDialog from '../results';
 import CorrectSoundFile from '../../assets/correct-sound.mp3';
 import WrongSoundFile from '../../assets/wrong-sound.mp3';
 import NotNeigbourFile from '../../assets/beep.mp3';
-import { database, auth } from '../../firebase.js'
+import { database, auth } from '../../firebase.js';
+import {  Link } from "react-router-dom";
+
 const file = require("../../dictionary.txt");
 
 class GameScreen extends Component {
@@ -142,7 +144,7 @@ class GameScreen extends Component {
                 count = count + 1;
               }
             }
-            console.log("count", count);
+            // console.log("count", count);
             if (count > 0) {
               this.setState({
                 points: this.state.points + count
@@ -155,7 +157,7 @@ class GameScreen extends Component {
               ]);
 
               this.setState({ correctWords: this.correctWords });
-              console.log("this.tempArray.tempArray", this.correctWords);
+              // console.log("this.tempArray.tempArray", this.correctWords);
 
             }
             else {
@@ -188,10 +190,23 @@ class GameScreen extends Component {
   getLeaderboard = () => {
 
     //var data = this.state.vouchers[this.state.shownVoucher];
-    console.log("auth.currentUser.uid", auth.currentUser.uid);
     database.ref('marks/' + auth.currentUser.uid).on('value', data => {
-      if(data.val().points<this.state.points){
-        database.ref('marks/' + auth.currentUser.uid).set(
+
+      if (data.val()) {
+
+        if (data.val().points < this.state.points) {
+          database.ref('marks/' + auth.currentUser.uid).set(
+            {
+              uid: auth.currentUser.uid,
+              username: auth.currentUser.displayName,
+              points: this.state.points,
+              datetime: Date().toLocaleString()
+            }
+          );
+        }
+      }
+      else {
+        database.ref('marks/' + auth.currentUser.uid).update(
           {
             uid: auth.currentUser.uid,
             username: auth.currentUser.displayName,
@@ -200,6 +215,9 @@ class GameScreen extends Component {
           }
         );
       }
+
+
+
     });
 
 
@@ -209,20 +227,20 @@ class GameScreen extends Component {
         tempUsers.push(item)
       });
 
-      function compare(a,b) {
+      function compare(a, b) {
         if (a.points < b.points)
           return 1;
         if (a.points > b.points)
           return -1;
         return 0;
       }
-      
+
       tempUsers.sort(compare);
 
       this.setState({
         users: tempUsers
       })
-      console.log("users", this.state.users);
+      // console.log("users", this.state.users);
     });
 
   }
@@ -251,7 +269,14 @@ class GameScreen extends Component {
       this.onTimesUp()
     }
   }
-
+  handleLogout=()=>{
+    auth.signOut().then(function() {
+      localStorage.removeItem('token');
+    }).catch(function(error) {
+      // An error happened.
+    });
+    
+  }
   render() {
     return (
       <div className="App">
@@ -265,10 +290,19 @@ class GameScreen extends Component {
         />
         <div className="Game-wrapper">
           <div>
-            <h1>Points: {this.state.points}</h1>
+            <h1>Points: {this.state.points} | 
+            <Link  
+            className="logoutbtn" 
+            to="/" 
+            onClick={() => this.handleLogout()}>Sign out</Link>
+
+            
+            </h1>
+
           </div>
+        
           <div>
-            <h3>
+            <h3 className="countdown-comp">
               <span>Countdown(sec): {this.state.timeInSec}{this.state.offline && <span> | Offline</span>}
               </span>
             </h3>

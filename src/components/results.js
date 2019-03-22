@@ -17,9 +17,9 @@ class ResultsDialog extends Component {
 
     wrondWords = () => {
         let wrongwords = 0;
-        console.log("this.props.result.length",this.props.result.length);
+       // console.log("this.props.result.length",this.props.result.length);
         for (let i = 0; i < this.props.result.length; i++) {
-            console.log("this.props.result[i][1]",this.props.result[i][1]);
+            //console.log("this.props.result[i][1]",this.props.result[i][1]);
 
             if (this.props.result[i][1] === 0) {
                 wrongwords = wrongwords + 1;
@@ -32,7 +32,7 @@ class ResultsDialog extends Component {
         const { classes, onClose, selectedValue, ...other } = this.props;
 
         return (
-            <Dialog   className="modalwrap" onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+            <Dialog  fullScreen={true} className="modalwrap" onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
                 <DialogTitle id="simple-dialog-title">Score Card</DialogTitle>
                 <DialogContent>
 

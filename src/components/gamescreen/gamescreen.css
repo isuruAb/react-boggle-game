@@ -42,6 +42,18 @@
     min-height: 10px;
     cursor: pointer;
   }
+  .logoutbtn{
+    padding: 10px;
+    background: #ff3c00;
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .countdown-comp{
+    margin: -5px 0 10px 0;
+  }
   @keyframes App-logo-spin {
     from {
       transform: rotate(0deg);
@@ -59,6 +71,7 @@
     .modalwrap{
       margin: 0;
     }
+ 
   }
 
   @media (max-width:480px) {
@@ -69,4 +82,5 @@
     .modalwrap{
       margin: 0;
     }
+
   }

@@ -46,7 +46,7 @@ class LeaderBoard extends Component {
         this.setState({ value: index });
     };
     render() {
-        const { classes, theme } = this.props;
+        const { theme } = this.props;
         const DATE_OPTIONS = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
 
         return (

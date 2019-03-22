@@ -5,7 +5,6 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import firebase from 'firebase';
 import { auth } from '../../firebase'
-import GameScreen from '../gamescreen/gamescreen';
 import { Redirect } from 'react-router-dom'
 
 class LoginScreen extends Component {
