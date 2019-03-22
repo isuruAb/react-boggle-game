@@ -48,11 +48,25 @@
     border-radius: 10px;
     color: #fff;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 0.7em;
     font-weight: 400;
+    margin: 2vh 0vh 0vh 2vh;
+    height: 3vh;
+
+  }
+  .summary {
+    flex-direction: row;
+    display: flex;
+    margin: 15px 0;
   }
   .countdown-comp{
+    flex: 1;
     margin: -5px 0 10px 0;
+  }
+  .points-comp{
+    flex: 1;
+    margin: 0;
+
   }
   @keyframes App-logo-spin {
     from {

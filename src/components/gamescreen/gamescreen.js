@@ -289,16 +289,13 @@ class GameScreen extends Component {
           users={this.state.users}
         />
         <div className="Game-wrapper">
-          <div>
-            <h1>Points: {this.state.points} | 
+          <div className="summary">
+            <h1 className="points-comp">Points: {this.state.points}  {"  "} 
+            </h1>
             <Link  
             className="logoutbtn" 
             to="/" 
             onClick={() => this.handleLogout()}>Sign out</Link>
-
-            
-            </h1>
-
           </div>
         
           <div>
